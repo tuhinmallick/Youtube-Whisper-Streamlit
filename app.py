@@ -43,32 +43,27 @@ with col4:
     language = st.selectbox('Please select the language',tuple(LANGUAGES.values()))
 
 url = st.text_input("Enter your YouTube Video URL: 🔗")
-if url is not None or url != '':
-    if st.button("Fetch Video and Generate Subtitles 🚀"):
-        st.video(url.strip())
-        with st.spinner("Working... 💫 Meanwhile please enjoy your video 😉"):
-            subprocess.run(["yt_whisper", url, "--model", model_type.lower(), "--format", format_type.lower(), "--output_dir", "output", "--verbose", "True", "--task", task_type.lower(), "--language", language.title()])
-
-        filename = glob.glob("output/*")[0]
-        output_file = open(filename,"r")
-        output_file_data = output_file.read()
-
-        if filename.endswith(".srt"):
-            mime_type = "text/plain"
-        else:
-            mime_type = "text/vtt"
-
-        if st.download_button(
-                             label="Download Subtitles 📝",
-                             data=output_file_data,
-                             file_name=filename,
-                             mime=mime_type
-                         ):
-            st.balloons()
-            st.success('✅ Download Successful !!')
-
-else:
+if url is None and url == '':
     st.warning('⚠ Please enter the URL! 😯')
 
+
+elif st.button("Fetch Video and Generate Subtitles 🚀"):
+    st.video(url.strip())
+    with st.spinner("Working... 💫 Meanwhile please enjoy your video 😉"):
+        subprocess.run(["yt_whisper", url, "--model", model_type.lower(), "--format", format_type.lower(), "--output_dir", "output", "--verbose", "True", "--task", task_type.lower(), "--language", language.title()])
+
+    filename = glob.glob("output/*")[0]
+    output_file = open(filename,"r")
+    output_file_data = output_file.read()
+
+    mime_type = "text/plain" if filename.endswith(".srt") else "text/vtt"
+    if st.download_button(
+                         label="Download Subtitles 📝",
+                         data=output_file_data,
+                         file_name=filename,
+                         mime=mime_type
+                     ):
+        st.balloons()
+        st.success('✅ Download Successful !!')
 
 st.markdown("<br><hr><center>Made with ❤️ by <a href='mailto:ralhanprateek@gmail.com?subject=YT - Whisper WebApp!&body=Please specify the issue you are facing with the app.'><strong>Prateek Ralhan</strong></a> with the help of [yt-whisper](https://github.com/m1guelpf/yt-whisper) built by [m1guelpf](https://github.com/m1guelpf) ✨</center><hr>", unsafe_allow_html=True)
